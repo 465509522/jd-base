@@ -4,7 +4,7 @@
 
 - 2020-11-08：调整jd.sh.sample，无论容器环境是北京时间还是UTC时间，日志文件名均记录为北京时间。**在运行过一次最新的git_pull.sh并重启容器后生效。**
 
-- **2020-11-10：lxk0301/scripts 已被封，新的库为 [lxk0301/jd_scripts](https://github.com/lxk0301/jd_scripts)，所有人请按[issue#26](https://github.com/EvineDeng/jd-base/issues/26)重新配置一下！！**
+- **2020-11-10：lxk0301/scripts 已被封，新的库为 [lxk0301/jd_scripts](https://github.com/lxk0301/jd_scripts)，所有人请按[#26](https://github.com/EvineDeng/jd-base/issues/26)重新配置一下！！**
 
 - 2020-11-11：已构建多平台docker镜像，包括：linux/amd64, linux/arm64, linux/ppc64le, linux/s390x, linux/arm/v7, linux/arm/v6。树莓派、N1小钢炮等arm设备均可使用。
 
@@ -45,7 +45,7 @@ docker run -dit \
 
 ### 物理机安装
 
-请根据系统的不同，安装好`git wget curl nodejs npm`（不同系统的包名不一定一样）：
+请根据系统的不同，安装好`git wget curl nodejs npm`。
 
 - debian/ubuntu/armbian，以及其他debian系：
     ```
@@ -60,6 +60,10 @@ docker run -dit \
     opkg update && opkg install git git-http wget curl node node-npm
     ```
     **声明：OpenWrt环境千差万别，不保证一定可用，需要根据自己的环境来配置，如果OpenWrt安装了docker，也可以使用docker的方法。**
+
+*注1：不同系统的包名不一定一样，需保证 node 大版本 >=10，安装好后使用`node -v`或`nodejs -v`命令可查看版本。*
+
+*注2：如果是按以上命令安装成功，那应该没问题。如果是nvm安装的或其他方式安装的，请确保安装后的命令在 PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin" 中，如不在，请参考[#21](https://github.com/EvineDeng/jd-base/issues/21)修改。*
 
 ## 克隆脚本
 
@@ -79,9 +83,9 @@ docker和物理机分别按下述方法执行之后，指定的路径（docker�
     docker logs -f jd
     ```
 
-    *注：检查日志输出是否正常，如果是首次运行，那么最后一条输出将出现 `脚本执行成功，请按照 Readme 教程继续配置...` 在出现此消息后可按`CTRL + C`切出来。*
+    *注1：检查日志输出是否正常，如果是首次运行，那么最后一条输出将出现 `脚本执行成功，请按照 Readme 教程继续配置...` 在出现此消息后可按`CTRL + C`切出来。*
 
-    *如没有成功，请根据错误提示进行操作。如果啥中文提示都没有，那么是你网络不好，无法连接Github，请想办法改善。*
+    *注2：如没有成功，请根据错误提示进行操作。如果啥中文提示都没有，那么是你网络不好，无法连接Github，请想办法改善。*
     
 2. 确保出现上述成功的消息后，进入容器环境：
 
@@ -93,6 +97,10 @@ docker和物理机分别按下述方法执行之后，指定的路径（docker�
 
     ```
     docker exec -it jd /bin/sh
+    ```
+    成功进入后光标处应变为下面这样，如果没有，那么请检查容器安装日志。
+    ```
+    ~ # 
     ```
 
 ### 物理机安装
@@ -108,6 +116,8 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/EvineDeng/jd-base/main/f
 # 或者使用wget
 bash -c "$(wget https://raw.githubusercontent.com/EvineDeng/jd-base/main/first_run.sh -O -)"
 ```
+
+*注：物理机如需多账号并发，需要创建多个文件夹，然后分别进入每个文件夹后运行上述命令，然后在每个创建的文件夹下都按下面说明配置一下，并且在制定定时任务时，你配置了多少个文件夹，那么同一条定时任务就要重复几次（因为.sh脚本路径不一样）。*
 
 ## 修改信息
 
@@ -136,8 +146,6 @@ bash -c "$(wget https://raw.githubusercontent.com/EvineDeng/jd-base/main/first_r
 - *Windows用户可以使用WinSCP这个软件，连接机器找对应文件（docker安装的请前往部署容器时运行的 `-v /Host主机上的目录/:/root` 这个命令中冒号左边的路径去找；物理机安装的就是你定义的那个路径。）如何使用WinSCP请自行百度。*
 
 - *如果在windows下编辑`git_pull.sh`，请使用 notepad++、VS Code、Sublime Text 3等软件，请不要使用记事本。*
-
-- *`.sh`脚本如果没有可执行权限，定时任务将无法正常运行。*
 
 - **如何修改请仔细阅读文件中的注释部分。**
 
@@ -196,7 +204,9 @@ bash -c "$(wget https://raw.githubusercontent.com/EvineDeng/jd-base/main/first_r
     sh git_pull.sh  # 如果是物理机，请按下面说明修改
     ```
 
-    *注：如果是物理机，请先使用`echo $SHELL`命令查看自己的shell，如果返回的是`/bin/bash`，那么可以替换`sh git_pull.sh`命令为`bash git_pull.sh`。*
+    *注1：如果是物理机，请先使用`echo $SHELL`命令查看自己的shell，如果返回的是`/bin/bash`，那么可以替换`sh git_pull.sh`命令为`bash git_pull.sh`。*
+    
+    *注2：`.sh`脚本如果没有可执行权限，虽然手动执行可以运行，但定时任务将无法正常运行。*
 
 2. 看看js脚本的信息替换是否正常。
 
@@ -212,7 +222,7 @@ bash -c "$(wget https://raw.githubusercontent.com/EvineDeng/jd-base/main/first_r
     sh jd_bean_sign.sh  # 物理机参考本节第1.步替换sh命令
     ```
 
-    去`log/jd_bean_sign`文件夹下查看日志，查看结果是否正常。
+    去`log/jd_bean_sign`文件夹下查看日志，查看结果是否正常，如不正常，请从头检查。
 
 ## 定时任务
 
